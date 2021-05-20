@@ -9,7 +9,8 @@ struct BigInt {
 
 
     int length;
+    char base; // 10 for Decimal mode, 2 for Binary mode
     bool sign;
-    long long small; // If value is small < 2^63 - 1
+    unsigned long long small; // If value is small < 2^63 - 1
     string big; // If value is big (otherwise)
 };
