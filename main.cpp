@@ -5,8 +5,8 @@ using namespace std;
 
 int main() {
 
-    string s = "1234";
-    BigInt bi(s, 10);
-
+   /* string s = "1234";
+    BigInt bi(s, 10);*/
+    cout << "Hello World!";
     return 0;
 }
