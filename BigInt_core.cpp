@@ -1,25 +1,35 @@
 #include <cmath>
 #include <iostream>
+#include <string>
+#include <algorithm>
 
 #include "BigInt_core.h"
 #include "BigInt.h"
+using namespace std;
 
-string removeLeadingZeros(string s) {
-    bool isNeg = (s[0] == '-');
-	unsigned int i = isNeg;
-	while (i < s.length() && s[i] == '0') i++;
-	if (i == s.length()) return "0"; // Full 0
-    if(isNeg)
-        return "-" + s.substr(i, std::string::npos);
-	return s.substr(i, std::string::npos);
+string BigInt::getDec() {
+	string temp = big;
+	if (sign) temp += "-";
+	reverse(temp.begin(), temp.end());
+	return temp;
 }
+
+string BigInt::getBin()
+{
+	if (length < 19) {
+		return decimalToBinary(small);
+	}
+	string temp = big;
+	reverse(temp.begin(), temp.end());
+	return decimalToBinary(temp);
+}
+
 
 BigInt::BigInt()
 {
     length = 0;
     small = 0;
     big = "";
-    base = 10;
     sign = false;
 }
 
@@ -29,41 +39,47 @@ BigInt::BigInt(string input, int _base)
     sign = false;
     length = 0;
     small = 0;
-    base = 10;
 
     input = removeLeadingZeros(input); // Remove unnecessary zeros
 
+
     if(_base == 10) {
 
-        base = 10;
         int n = input.length();
         if(input[0] == '-')
             sign = true;
         for(int i = n-1; i >= sign; i--)
             big += input[i];
         length = n - sign;
-        if(length < 19) small = stoi(big);
+
+		string temp = big;
+		reverse(temp.begin(), temp.end());
+        if(length < 19) small = stoll(temp);
 
     } else if(_base == 2) {
 
-        base = 2;
-        int n = input.length();    
-        for(int i = n - 1; i >= 0; i--) {
-            big += input[i];
-        }
-        length = n;
-        if(length >= 128 && length % 8 == 0)
+        input = binaryToDecimal(input);
+        int n = input.length();
+        if(input[0] == '-')
             sign = true;
-        if(length < 63) {
+        for(int i = n-1; i >= sign; i--)
+            big += input[i];
+        length = n - sign;
 
-            unsigned long long temp = 1;
-            for(int i = 0; i < length; i++) {
-                small += (big[i] - '0') * temp;
-                temp *= 2;
-            }
-        }
+		string temp = big;
+		reverse(temp.begin(), temp.end());
+        if(length < 19) small = stoll(temp);
 
     } else {
         std::cerr << "Wrong base!" << std::endl;
     }
+}
+
+BigInt::BigInt(long long data) 
+{
+    sign = data < 0;
+    small = llabs(data);
+    big = to_string(small);
+	reverse(big.begin(), big.end());
+    length = log10(small) + 1;
 }

@@ -1,4 +1,7 @@
 #include <algorithm>
+#include <stdexcept>
+#include <iostream>
+#include <cmath>
 
 #include "BigInt.h"
 #include "BigInt_core.h"
@@ -6,38 +9,6 @@
 using namespace std;
 
 
-BigInt operator+(BigInt& lhs, BigInt& rhs) {
-	if(lhs.base == rhs.base && rhs.base == 10) {
-		if(lhs.sign && rhs.sign) { // Neg + Neg = Neg
-
-		}
-		if(lhs.sign && !rhs.sign) { // Neg + Pos = -Pos + Pos
-
-		}
-		if(!lhs.sign && rhs.sign) { // Pos + Neg = Pos - Pos
-			
-		}
-		if(!lhs.sign && !rhs.sign) { // Pos + Pos = Pos
-			
-		}
-	}
-}
-BigInt operator-(BigInt& lhs, BigInt& rhs) {
-	if(lhs.base == rhs.base && rhs.base == 10) {
-		if(lhs.sign && rhs.sign) { // Neg - Neg 
-		
-		}
-		if(lhs.sign && !rhs.sign) { // Neg - Pos 
-
-		}
-		if(!lhs.sign && rhs.sign) { // Pos - Neg 
-			
-		}
-		if(!lhs.sign && !rhs.sign) { // Pos - Pos  
-			
-		}
-	}
-}
 
 
 string addDecimal(string A, string B) 
@@ -71,7 +42,6 @@ string addDecimal(string A, string B)
 
 string subDecimal(string A, string B) 
 {
-
     while(A.length() < B.length())	
 		A += "0";
 	while(B.length() < A.length())	
@@ -150,5 +120,363 @@ string pow(string s, int n)
         n >>= 1;
     }
 
+	return res;
+}
+
+string binaryToDecimal(string source) {
+	bool sign = (source.length() >= 128) && (source.length() % 8 == 0);
+
+	int n = source.length();
+	if(sign)
+		for(int i = 0; i < n; i++)
+			source[i] = (source[i] == '1') ? '0' : '1';
+
+	string res = "0";
+	for(int i = n - 1; i >= 0; i--) {
+		if(source[i] == '1') {
+			res = addDecimal(res, pow("2", n - i - 1));
+		}
+	}
+
+	if(sign) res += "-";
+
+	reverse(res.begin(), res.end());
+
+	return res;
+}
+
+string decimalToBinary(long long n)
+{
+	string temp = "";
+	while (n > 0) {
+		temp += char(n & 1 + '0');
+		n >>= 1;
+	}
+	reverse(temp.begin(), temp.end());
+	return temp;
+}
+
+string removeLeadingZeros(string s) {
+	bool isNeg = (s[0] == '-');
+	unsigned int i = isNeg;
+	while (i < s.length() && s[i] == '0') i++;
+	if (i == s.length()) return "0"; // Full 0
+	if (isNeg)
+		return "-" + s.substr(i, std::string::npos);
+	return s.substr(i, std::string::npos);
+}
+
+string decimalToBinary(string n)
+{
+	
+	string res = "";
+	while (n.length() > 0 && n != "0")
+	{
+		string temp = "";
+		string quotient = "";
+		res += char(((n.back() - '0') & 1) + '0');
+		int i = 0;
+		while (i < n.length()) {
+			temp += n[i];
+			if (stoi(temp) >= 2) {
+				int t = stoi(temp) / 2;
+				quotient += char(t + '0');
+				temp = to_string(stoi(temp) - t * 2);
+				if (temp == "0") temp = "";
+			} else {
+				quotient += "0";
+			}
+			i++;
+		}
+		n = quotient;
+		n = removeLeadingZeros(n);
+	}
+	reverse(res.begin(), res.end());
+	return res;
+}
+
+BigInt pow(BigInt A, long long n)
+{
+	if (A.big == "0" || n == 0) return A;
+	BigInt res(1);
+	while (n > 0) {
+		if (n & 1) {
+			res = res * A;
+		}
+		A = A * A;
+		n >>= 1;
+	}
+	return res;
+}
+
+BigInt operator+(BigInt lhs, BigInt rhs) {
+	BigInt temp;
+	string temps = "";
+	if(max(lhs.length, rhs.length) < 19) { // Optimize small number 
+		return BigInt(lhs.small + rhs.small);
+	} 
+	if(lhs.sign && rhs.sign) { // Neg + Neg = Neg
+		temp = lhs;
+		BigInt temp2 = rhs;
+		temp.sign = false;
+		temp2.sign = false;
+		temp = temp + temp2;
+		temp.sign = true;
+		return temp;
+	}
+	if(lhs.sign && !rhs.sign) { // Neg + Pos = -Pos + Pos
+		temp = lhs;
+		temp.sign = false;
+		return rhs - temp;
+	}
+	if(!lhs.sign && rhs.sign) { // Pos + Neg = Pos - Pos
+		temp = rhs;
+		temp.sign = false;
+		return lhs - temp;
+	}
+	if(!lhs.sign && !rhs.sign) { // Pos + Pos = Pos
+		temps = addDecimal(lhs.big, rhs.big);
+		reverse(temps.begin(), temps.end());
+		return BigInt(temps, 10);
+	}
+	return temp;
+}
+BigInt operator-(BigInt lhs, BigInt rhs) {
+	BigInt temp;
+	string temps = "";
+
+	if(max(lhs.length, rhs.length) < 19){ // Optimize small number 
+		return BigInt(lhs.small - rhs.small);
+	} 
+	
+	if(lhs.sign && rhs.sign) { // Neg - Neg <=> Neg + Pos
+		temp = rhs;
+		temp.sign = false;
+		return lhs + temp;
+	}
+	if(lhs.sign && !rhs.sign) { // Neg - Pos <=> Neg + Neg
+		temp = rhs;
+		temp.sign = true;
+		return lhs + temp;
+	}
+	if(!lhs.sign && rhs.sign) { // Pos - Neg <=> Pos + Pos
+		temp = rhs;
+		temp.sign = false;
+		return lhs + temp;
+	}
+	if(!lhs.sign && !rhs.sign) { // Pos - Pos
+		temps = subDecimal(lhs.big, rhs.big);
+		reverse(temps.begin(), temps.end());
+		return BigInt(temps, 10);
+	}
+	return temp;
+}
+
+void split_at(BigInt source, BigInt& high, BigInt& low, int num)
+{
+	string s = source.getDec();
+
+	string h = "", l = "";
+
+	int n = s.length();
+
+	for (int i = 0; i < n - num; i++)
+		h += s[i];
+	for (int i = n - num; i < s.length(); i++)
+		l += s[i];
+	high = BigInt(h, 10);
+	low = BigInt(l, 10);
+}
+
+void shiftLeft10(BigInt& source, int num) {
+	if (num == 0 || source.big == "0")
+		return;
+	reverse(source.big.begin(), source.big.end());
+	for (int i = 0; i < num; i++)
+		source.big += "0";
+	source.length = source.big.length();
+	if (source.length < 19)
+		source.small = stoll(source.big);
+	reverse(source.big.begin(), source.big.end());
+}
+
+// https://en.wikipedia.org/wiki/Karatsuba_algorithm#Pseudocode
+BigInt karatsuba(BigInt num1, BigInt num2) {
+
+	BigInt res;
+
+	if (num1.length < 2 || num2.length < 2) {
+		string temp = mulDecimal(num1.big, num2.big);
+		reverse(temp.begin(), temp.end());
+		return BigInt(temp, 10);
+	}
+
+	int m = max(num1.length, num2.length);
+	int m2 = floor(m / 2);
+	BigInt high1, low1, high2, low2;
+	split_at(num1, high1, low1, m2);
+	split_at(num2, high2, low2, m2);
+	BigInt z0, z1, z2;
+	z0 = karatsuba(low1, low2);
+	z1 = karatsuba(low1 + high1, low2 + high2);
+	z2 = karatsuba(high1, high2);
+
+	BigInt ztemp = z1 - z2;
+	ztemp = ztemp - z0; // Equal ztemp = z1 - z2 - z0;
+	shiftLeft10(z2, m2 * 2);
+	shiftLeft10(ztemp, m2);
+
+	ztemp = ztemp + z2;
+	ztemp = ztemp + z0;
+	return ztemp;
+}
+
+BigInt operator*(BigInt lhs, BigInt rhs)
+{
+	BigInt temp1;
+	BigInt temp2;
+	if (lhs.length + rhs.length < 19) { // Optimize small number 
+		return BigInt(lhs.small * rhs.small);
+	}
+	
+	if (lhs.sign && rhs.sign) { // Neg * Neg 
+		temp1 = lhs;
+		temp2 = rhs;
+		temp1.sign = false;
+		temp2.sign = false;
+		return temp1 * temp2;
+	}
+
+	if (!lhs.sign && rhs.sign) { // Pos * Neg
+		temp1 = rhs;
+		temp1.sign = false;
+		temp1 = lhs * temp1;
+		temp1.sign = true;
+		return temp1;
+	}
+
+	if (lhs.sign && !rhs.sign) { // Neg * Pos
+		temp1 = lhs;
+		temp1.sign = false;
+		temp1 = temp1 * rhs;
+		temp1.sign = true;
+		return temp1;
+	}
+
+	if (!lhs.sign && !rhs.sign) { // Pos * Pos
+		return karatsuba(lhs, rhs);
+	}
+
+	return BigInt();
+}
+
+void divide(BigInt A, BigInt B, BigInt &q, BigInt &r)
+{
+	string start = "";
+	int i = 0;
+	for(; i < B.length - 1; i++)
+		start += A.big[A.length - i - 1];
+
+	BigInt temp(start, 10);
+
+	BigInt digit[10];
+	for(int i = 0; i < 10; i++)
+		digit[i] = BigInt(i);
+
+	BigInt quotient(0);
+
+	for(; i < A.length; i++) {
+		shiftLeft10(temp, 1);
+		temp = temp + digit[A.big[A.length - i - 1] - '0'];
+		if(!(temp < B)) {
+			int j = 9;
+			for(; j >= 0; j--) {
+				if(!(temp < (B * digit[j])))
+					break;
+			}
+			shiftLeft10(quotient, 1);
+			quotient = quotient + digit[j];
+			temp = temp - B * digit[j];
+		} else {
+			shiftLeft10(quotient, 1);
+			quotient = quotient + digit[0];
+		}
+	}
+	q = quotient;
+	r = temp;
+}
+
+BigInt operator/(BigInt A, BigInt B)
+{
+	if (B.big == "0") throw overflow_error("Divide by zero");
+
+	if (A == B) {
+		return BigInt(1);
+	}
+	if (A < B) {
+		return BigInt(0);
+	}
+	if (A.length < 19 && B.length < 19)
+		return BigInt(A.small / B.small);
+
+	BigInt q, r;
+	divide(A, B, q, r);
+	
+	if ((A.sign && !B.sign) || (!A.sign && B.sign))
+		q.sign = true;
+
+	return q;
+}
+
+BigInt operator%(BigInt A, BigInt B) {
+	if (B.big == "0") throw overflow_error("Divide by zero");
+
+	if (A == B) {
+		return BigInt(0);
+	}
+	if (A < B) {
+		return A;
+	}
+	if (A.length < 19 && B.length < 19)
+		return BigInt(A.small % B.small);
+	BigInt q, r;
+	divide(A, B, q, r);
+	if ((A.sign && !B.sign) || (!A.sign && B.sign))
+		r.sign = true;
+	return r;
+}
+
+bool operator==(BigInt A, BigInt B)
+{
+	return A.big == B.big;
+}
+
+bool operator<(BigInt A, BigInt B)
+{
+	BigInt temp = A - B;
+	return temp.sign; // A - B < 0
+}
+
+bool operator>(BigInt A, BigInt B)
+{
+	return !(A < B) && !(A == B);
+}
+
+// Div 2 ^ n
+BigInt operator>>(BigInt A, long long n)
+{
+	string bin = A.getBin();
+	while (bin.length() > 0 && n > 0) {
+		bin.pop_back();
+		n--;
+	}
+	return BigInt(bin, 2);
+}
+
+// Mul 2 ^ n
+BigInt operator<<(BigInt A, long long n)
+{
+	BigInt res = pow(BigInt(2), n);
+	res = res * A;
 	return res;
 }
