@@ -6,9 +6,9 @@ using namespace std;
 
 int main() {
 
-    BigInt A("123333247643", 10);
-    BigInt B("123242312", 10);
-    BigInt C = A % B;
+    BigInt A("12333324764300000000000", 10);
+    BigInt B("12324231200000000000000", 10);
+    BigInt C = A & B;
     
 	cout << C.getDec() << endl;
 	

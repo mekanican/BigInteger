@@ -14,6 +14,11 @@ bool operator>(BigInt, BigInt);
 BigInt operator>>(BigInt, long long);
 BigInt operator<<(BigInt, long long);
 
+BigInt operator&(BigInt, BigInt);
+BigInt operator|(BigInt, BigInt);
+BigInt operator^(BigInt, BigInt);
+BigInt operator~(BigInt);
+
 string binaryToDecimal(string);
 string decimalToBinary(long long);
 string decimalToBinary(string);

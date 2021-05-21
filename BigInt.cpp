@@ -128,9 +128,18 @@ string binaryToDecimal(string source) {
 
 	int n = source.length();
 	if(sign)
+	{
 		for(int i = 0; i < n; i++)
 			source[i] = (source[i] == '1') ? '0' : '1';
-
+		int temp = 0;
+		int carry = (source[n - 1] - '0' + 1) / 2;
+		source[n - 1] = char(((source[n - 1] - '0' + 1) % 2) + '0');
+		for(int i = n-2; i >= 0; i--) {
+			temp = source[i] - '0' + carry;
+			source[i] = char((temp % 2) + '0');
+			carry = temp / 2;
+		}
+	}
 	string res = "0";
 	for(int i = n - 1; i >= 0; i--) {
 		if(source[i] == '1') {
@@ -152,8 +161,30 @@ string decimalToBinary(long long n)
 		temp += char(n & 1 + '0');
 		n >>= 1;
 	}
-	reverse(temp.begin(), temp.end());
-	return temp;
+	if(n >= 0) {
+		reverse(temp.begin(), temp.end());
+		return temp;
+	} else { // 2 complement
+		while(temp.length() < 128)
+			temp += "0";
+		while(temp.length() % 8 != 0)
+			temp += "0";
+		// Flip
+		int x = temp.length();
+		for(int i = 0; i < x; i++)
+			temp[i] = (temp[i] == '1') ? '0' : '1';
+		int carry = (temp[0] - '0' + 1) / 2;
+		temp[0] = char(((temp[0] - '0' + 1) % 2) + '0');
+		int t = 0;
+		for(int i = 1; i < x; i++)
+		{
+			t = temp[i] - '0' + carry;
+			carry = t / 2;
+			temp[i] = char((t % 2) + '0');
+		}
+		reverse(temp.begin(), temp.end());
+		return temp;
+	}
 }
 
 string removeLeadingZeros(string s) {
@@ -168,7 +199,11 @@ string removeLeadingZeros(string s) {
 
 string decimalToBinary(string n)
 {
-	
+	bool sign = false;
+	if(n[0] == '-') {
+		sign = true;
+		n = n.substr(1, string::npos);
+	}
 	string res = "";
 	while (n.length() > 0 && n != "0")
 	{
@@ -191,8 +226,30 @@ string decimalToBinary(string n)
 		n = quotient;
 		n = removeLeadingZeros(n);
 	}
-	reverse(res.begin(), res.end());
-	return res;
+	if(!sign) {
+		reverse(res.begin(), res.end());
+		return res;
+	} else {
+		while(res.length() < 128)
+			res += "0";
+		while(res.length() % 8 != 0)
+			res += "0";
+		// Flip
+		int x = res.length();
+		for(int i = 0; i < x; i++)
+			res[i] = (res[i] == '1') ? '0' : '1';
+		int carry = (res[0] - '0' + 1) / 2;
+		res[0] = char(((res[0] - '0' + 1) % 2) + '0');
+		int t = 0;
+		for(int i = 1; i < x; i++)
+		{
+			t = res[i] - '0' + carry;
+			carry = t / 2;
+			res[i] = char((t % 2) + '0');
+		}
+		reverse(res.begin(), res.end());
+		return res;
+	}
 }
 
 BigInt pow(BigInt A, long long n)
@@ -465,6 +522,9 @@ bool operator>(BigInt A, BigInt B)
 // Div 2 ^ n
 BigInt operator>>(BigInt A, long long n)
 {
+	if(A.length < 19) { // Optimize for small number
+		return BigInt(A.small >> n);
+	}
 	string bin = A.getBin();
 	while (bin.length() > 0 && n > 0) {
 		bin.pop_back();
@@ -476,7 +536,110 @@ BigInt operator>>(BigInt A, long long n)
 // Mul 2 ^ n
 BigInt operator<<(BigInt A, long long n)
 {
+
+	if(A.length + (n*log10(2)) + 1 < 19) // Optimize small number
+		return BigInt(A.small << n);
+
 	BigInt res = pow(BigInt(2), n);
 	res = res * A;
 	return res;
+}
+
+BigInt operator&(BigInt lhs, BigInt rhs)
+{
+	if(lhs.length < 19 && rhs.length < 19) {
+		return BigInt(lhs.small & rhs.small);
+	}
+	string A = lhs.getBin();
+	string B = rhs.getBin();
+	reverse(A.begin(), A.end());
+	reverse(B.begin(), B.end());
+
+	string res = "";
+	
+	if(A.length() < B.length()) {
+		for(int i = 0; i < A.length(); i++) {
+			res += char(((A[i] - '0') & (B[i] - '0')) + '0');
+		}
+	} else {
+		for(int i = 0; i < B.length(); i++) {
+			res += char(((A[i] - '0') & (B[i] - '0')) + '0');
+		}
+	}
+	reverse(res.begin(), res.end());
+	return BigInt(res, 2);
+}
+
+BigInt operator|(BigInt lhs, BigInt rhs)
+{
+	if(lhs.length < 19 && rhs.length < 19) {
+		return BigInt(lhs.small | rhs.small);
+	}
+	string A = lhs.getBin();
+	string B = rhs.getBin();
+	reverse(A.begin(), A.end());
+	reverse(B.begin(), B.end());
+
+	string res = "";
+	
+	if(A.length() < B.length()) {
+		for(int i = 0; i < A.length(); i++) {
+			res += char(((A[i] - '0') | (B[i] - '0')) + '0');
+		}
+		for(int i = A.length(); i < B.length(); i++) {
+			res += B[i];
+		}
+	} else {
+		for(int i = 0; i < B.length(); i++) {
+			res += char(((A[i] - '0') | (B[i] - '0')) + '0');
+		}
+		for(int i = B.length(); i < A.length(); i++) {
+			res += A[i];
+		}
+	}
+	reverse(res.begin(), res.end());
+	return BigInt(res, 2);
+}
+
+BigInt operator^(BigInt lhs, BigInt rhs)
+{
+	if(lhs.length < 19 && rhs.length < 19) {
+		return BigInt(lhs.small ^ rhs.small);
+	}
+	string A = lhs.getBin();
+	string B = rhs.getBin();
+	reverse(A.begin(), A.end());
+	reverse(B.begin(), B.end());
+
+	string res = "";
+	
+	if(A.length() < B.length()) {
+		for(int i = 0; i < A.length(); i++) {
+			res += char(((A[i] - '0') ^ (B[i] - '0')) + '0');
+		}
+		for(int i = A.length(); i < B.length(); i++) {
+			res += B[i];
+		}
+	} else {
+		for(int i = 0; i < B.length(); i++) {
+			res += char(((A[i] - '0') ^ (B[i] - '0')) + '0');
+		}
+		for(int i = B.length(); i < A.length(); i++) {
+			res += A[i];
+		}
+	}
+	reverse(res.begin(), res.end());
+	return BigInt(res, 2);
+}
+
+BigInt operator~(BigInt A)
+{
+	if(A.length < 19) {
+		return BigInt(~A.small);
+	}
+
+	string s = A.getBin();
+	for(int i = 0; i < s.length(); i++)
+		s[i] = (s[i] == '1') ? '0' : '1';
+	return BigInt(s,2);
 }
