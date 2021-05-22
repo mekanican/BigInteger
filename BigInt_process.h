@@ -1,6 +1,8 @@
 #pragma once
 #include "BigInt_core.h"
+#include <fstream>
+using namespace std;
 
-BigInt whenNIsFour(char* parameter[], string para[], BigInt lhs, BigInt rhs);
-void bigIntProcess(char* parameter[], int n, FILE* fo);
+BigInt whenNIsFour(string parameter[], BigInt lhs, BigInt rhs);
+void bigIntProcess(string parameter[], int n, ofstream& fout);
 

@@ -17,10 +17,15 @@ string BigInt::getDec() {
 string BigInt::getBin()
 {
 	if (length < 19) {
-		return decimalToBinary(small);
+        if(sign)
+		    return decimalToBinary(-small);
+        else
+            return decimalToBinary(small);
 	}
 	string temp = big;
 	reverse(temp.begin(), temp.end());
+    if(sign) temp = "-" + temp;
+
 	return decimalToBinary(temp);
 }
 
@@ -54,7 +59,9 @@ BigInt::BigInt(string input, int _base)
 
 		string temp = big;
 		reverse(temp.begin(), temp.end());
-        if(length < 19) small = stoll(temp);
+        if(length < 19) {
+            small = stoll(temp);
+        }
 
     } else if(_base == 2) {
 

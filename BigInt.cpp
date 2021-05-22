@@ -156,10 +156,11 @@ string binaryToDecimal(string source) {
 
 string decimalToBinary(long long n)
 {
+	long long m = llabs(n);
 	string temp = "";
-	while (n > 0) {
-		temp += char(n & 1 + '0');
-		n >>= 1;
+	while (m > 0) {
+		temp += char((m & 1) + '0');
+		m >>= 1;
 	}
 	if(n >= 0) {
 		reverse(temp.begin(), temp.end());
@@ -302,6 +303,7 @@ BigInt operator-(BigInt lhs, BigInt rhs) {
 	BigInt temp;
 	string temps = "";
 
+	
 	if(max(lhs.length, rhs.length) < 19){ // Optimize small number 
 		return BigInt(lhs.small - rhs.small);
 	} 
@@ -628,6 +630,7 @@ BigInt operator^(BigInt lhs, BigInt rhs)
 			res += A[i];
 		}
 	}
+	cout << res << endl;
 	reverse(res.begin(), res.end());
 	return BigInt(res, 2);
 }
@@ -635,7 +638,9 @@ BigInt operator^(BigInt lhs, BigInt rhs)
 BigInt operator~(BigInt A)
 {
 	if(A.length < 19) {
-		return BigInt(~A.small);
+		BigInt t(~A.small);
+		t.sign = !A.sign;
+		return t;
 	}
 
 	string s = A.getBin();
