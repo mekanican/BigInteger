@@ -253,6 +253,16 @@ string decimalToBinary(string n)
 	}
 }
 
+BigInt abs(BigInt A) {
+	if (A.sign == false) {
+		return A;
+	}
+	else {
+		A.sign = false;
+		return A;
+	}
+}
+
 BigInt pow(BigInt A, long long n)
 {
 	if (A.big == "0" || n == 0) return A;
@@ -265,6 +275,151 @@ BigInt pow(BigInt A, long long n)
 		n >>= 1;
 	}
 	return res;
+}
+
+int digits(BigInt A) {
+	return A.length; //return the number of digits in BASE 10
+}
+
+BigInt min(BigInt A, BigInt B) {
+	if (A < B) {
+		return A;
+	}
+	else {
+		return B;
+	}
+}
+
+BigInt max(BigInt A, BigInt B) {
+	if (A > B) {
+		return A;
+	}
+	else {
+		return B;
+	}
+}
+
+string to_string(BigInt A) {
+	return A.getDec();
+}
+
+string to_base32(BigInt A) {
+	BigInt thirtyTwo("32", 10);
+	bool sign = A.sign;
+	A = abs(A);
+	BigInt zero("0", 10);
+	string res = "";
+	string alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ234567";
+	while (A > zero) {
+		BigInt remainder = A % thirtyTwo;
+		string r = remainder.getDec();
+		int index = 0;
+		if (r.length() == 1) {
+			index = r[0] - '0';
+		}
+		else
+		{
+			index = r[1] - '0' + (r[0] - '0') * 10;
+		}
+		res += alphabet[index];
+		A = A / thirtyTwo;
+	}
+	std::reverse(res.begin(), res.end());
+	if (sign) {
+		return "-" + res;
+	}
+	return res;
+}
+
+string to_base58(BigInt A) {
+	BigInt fiftyEight("58", 10);
+	bool sign = A.sign;
+	A = abs(A);
+	BigInt zero("0", 10);
+	string res = "";
+	string alphabet = "123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz";
+	while (A > zero) {
+		BigInt remainder = A % fiftyEight;
+		string r = remainder.getDec();
+		int index = 0;
+		if (r.length() == 1) {
+			index = r[0] - '0';
+		}
+		else
+		{
+			index = r[1] - '0' + (r[0] - '0') * 10;
+		}
+		res += alphabet[index];
+		A = A / fiftyEight;
+	}
+	std::reverse(res.begin(), res.end());
+	if (sign) {
+		return "-" + res;
+	}
+	return res;
+}
+
+string to_base64(BigInt A) {
+	BigInt sixtyFour("64", 10);
+	bool sign = A.sign;
+	A = abs(A);
+	BigInt zero("0", 10);
+	string res = "";
+	string alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
+	while (A > zero) {
+		BigInt remainder = A % sixtyFour;
+		string r = remainder.getDec();
+		int index = 0;
+		if (r.length() == 1) {
+			index = r[0] - '0';
+		}
+		else
+		{
+			index = r[1] - '0' + (r[0] - '0') * 10;
+		}
+		res += alphabet[index];
+		A = A / sixtyFour;
+	}
+	std::reverse(res.begin(), res.end());
+	if (sign) {
+		return "-" + res;
+	}
+	return res;
+}
+
+bool sieveOfEratosthenes(bool*& isPrime) {
+	int n = 1000000;
+	isPrime = (bool*)calloc(n + 1, true);
+	if (!isPrime) {
+		return false;
+	}
+	else {
+		isPrime[0] = isPrime[1] = false;
+		for (int i = 2; i <= n; i++) {
+			if (isPrime[i] && (long long)i * i <= n) {
+				for (int j = i * i; j <= n; j += i) {
+					isPrime[j] = false;
+				}
+			}
+		}
+		return true;
+	}
+
+}
+
+bool is_prime(BigInt A) {
+	bool* isPrime;
+	if (sieveOfEratosthenes(isPrime)) {
+		if (A.length < 7) {
+			return isPrime[A.small];
+		}
+		else {
+
+		}
+
+		free(isPrime);
+	}
+	return true;
 }
 
 BigInt operator+(BigInt lhs, BigInt rhs) {

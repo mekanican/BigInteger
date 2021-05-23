@@ -38,7 +38,7 @@ int main() {
 
     //int debug = 1;
 
-    while(getline(fin, line)) {
+    /*while(getline(fin, line)) {
         for(int i = 0; i < 5; i++)
             parameter[i] = "";
         int count = 0;
@@ -48,7 +48,11 @@ int main() {
         bigIntProcess(parameter, count, fout);
 
         //cout << debug++ << endl;
-    }
+    }*/
+
+    BigInt A("91727756580", 10);
+    string s = to_base64(A);
+    cout << s;
 
     fin.close();
     fout.close();

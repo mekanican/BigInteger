@@ -8,7 +8,7 @@ using namespace std;
 
 BigInt whenNIsFour(string parameter[], BigInt lhs, BigInt rhs) {
 	BigInt res;
-	
+
 	string toCmp = parameter[2];
 	if (toCmp == "+") {
 		res = lhs + rhs;
