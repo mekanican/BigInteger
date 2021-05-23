@@ -525,7 +525,9 @@ bool operator>(BigInt A, BigInt B)
 BigInt operator>>(BigInt A, long long n)
 {
 	if(A.length < 19) { // Optimize for small number
-		return BigInt(A.small >> n);
+		long long t = A.small;
+		if(A.sign) t = -t;
+		return BigInt(t >> n);
 	}
 	string bin = A.getBin();
 	while (bin.length() > 0 && n > 0) {
@@ -540,7 +542,11 @@ BigInt operator<<(BigInt A, long long n)
 {
 
 	if(A.length + (n*log10(2)) + 1 < 19) // Optimize small number
-		return BigInt(A.small << n);
+	{
+		long long t = A.small;
+		if(A.sign) t = -t;
+		return BigInt(t << n);
+	}
 
 	BigInt res = pow(BigInt(2), n);
 	res = res * A;
@@ -550,7 +556,16 @@ BigInt operator<<(BigInt A, long long n)
 BigInt operator&(BigInt lhs, BigInt rhs)
 {
 	if(lhs.length < 19 && rhs.length < 19) {
-		return BigInt(lhs.small & rhs.small);
+		bool signA = lhs.sign;
+		bool signB = rhs.sign;
+
+		long long A = lhs.small;
+		long long B = rhs.small;
+
+		if(signA) A = -A;
+		if(signB) B = -B;
+
+		return BigInt(A & B);
 	}
 	string A = lhs.getBin();
 	string B = rhs.getBin();
@@ -575,7 +590,16 @@ BigInt operator&(BigInt lhs, BigInt rhs)
 BigInt operator|(BigInt lhs, BigInt rhs)
 {
 	if(lhs.length < 19 && rhs.length < 19) {
-		return BigInt(lhs.small | rhs.small);
+		bool signA = lhs.sign;
+		bool signB = rhs.sign;
+
+		long long A = lhs.small;
+		long long B = rhs.small;
+
+		if(signA) A = -A;
+		if(signB) B = -B;
+
+		return BigInt(A | B);
 	}
 	string A = lhs.getBin();
 	string B = rhs.getBin();
@@ -606,7 +630,16 @@ BigInt operator|(BigInt lhs, BigInt rhs)
 BigInt operator^(BigInt lhs, BigInt rhs)
 {
 	if(lhs.length < 19 && rhs.length < 19) {
-		return BigInt(lhs.small ^ rhs.small);
+		bool signA = lhs.sign;
+		bool signB = rhs.sign;
+
+		long long A = lhs.small;
+		long long B = rhs.small;
+
+		if(signA) A = -A;
+		if(signB) B = -B;
+
+		return BigInt(A ^ B);
 	}
 	string A = lhs.getBin();
 	string B = rhs.getBin();

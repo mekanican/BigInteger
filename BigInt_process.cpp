@@ -22,6 +22,9 @@ BigInt whenNIsFour(string parameter[], BigInt lhs, BigInt rhs) {
 	else if (toCmp == "/") {
 		res = lhs / rhs;
 	}
+	else if (toCmp == "%") {
+		res = lhs % rhs;
+	}
 	else if (toCmp == "&") {
 		res = lhs & rhs;
 	}
@@ -82,7 +85,8 @@ void bigIntProcess(string parameter[], int n, ofstream& fout) {
 				//fprintf(fo, "%s\n", res.getDec().c_str());
 			}
 		}
-		else if (parameter[0] == "2") {
+		else if (parameter[0] == "2" && parameter[1] == "10") {
+			
 			BigInt operand(parameter[2], 2);
 			//printf("%s", operand.getDec());
 			fout << operand.getDec() << endl;

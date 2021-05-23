@@ -39,7 +39,8 @@ int main() {
     //int debug = 1;
 
     while(getline(fin, line)) {
-
+        for(int i = 0; i < 5; i++)
+            parameter[i] = "";
         int count = 0;
         stringstream s(line);
         while(s >> parameter[count++]);
@@ -47,7 +48,6 @@ int main() {
         bigIntProcess(parameter, count, fout);
 
         //cout << debug++ << endl;
-
     }
 
     fin.close();
