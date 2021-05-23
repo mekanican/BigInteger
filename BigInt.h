@@ -32,6 +32,6 @@ string to_string(BigInt A);
 string to_base32(BigInt A);
 string to_base58(BigInt A);
 string to_base64(BigInt A);
-bool is_prime(BigInt A);
+bool is_prime(BigInt A, int iteration);
 
 string removeLeadingZeros(string);

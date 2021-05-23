@@ -11,6 +11,7 @@
 
 using namespace std;
 
+
 int main() {
 
     // BigInt A("10000001101100100101001001001101", 2);
@@ -50,9 +51,13 @@ int main() {
         //cout << debug++ << endl;
     }*/
 
-    BigInt A("91727756580", 10);
+  /*  BigInt A("91727756580", 10);
     string s = to_base64(A);
-    cout << s;
+    cout << s;*/
+    int iteration = 5;
+    
+    BigInt a("1817871392", 10);
+    cout << is_prime(a, iteration);
 
     fin.close();
     fout.close();

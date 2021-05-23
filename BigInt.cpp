@@ -9,8 +9,6 @@
 using namespace std;
 
 
-
-
 string addDecimal(string A, string B) 
 {
 
@@ -389,11 +387,14 @@ string to_base64(BigInt A) {
 
 bool sieveOfEratosthenes(bool*& isPrime) {
 	int n = 1000000;
-	isPrime = (bool*)calloc(n + 1, true);
+	isPrime = (bool*)calloc(n + 1, sizeof(bool));
 	if (!isPrime) {
 		return false;
 	}
 	else {
+		for (int i = 0; i <= n; i++) {
+			isPrime[i] = true;
+		}
 		isPrime[0] = isPrime[1] = false;
 		for (int i = 2; i <= n; i++) {
 			if (isPrime[i] && (long long)i * i <= n) {
@@ -404,17 +405,65 @@ bool sieveOfEratosthenes(bool*& isPrime) {
 		}
 		return true;
 	}
-
 }
 
-bool is_prime(BigInt A) {
+BigInt powerMod(BigInt x, BigInt y, BigInt mod) {// this will return (x^y) % mod with y is a NONNEGATIVE number
+	BigInt res("1", 10);
+	x = x % mod;
+	BigInt zero("0", 10);
+	BigInt one("1", 10);
+	while (y > zero) {
+		if ((y & one) > zero) {
+			res = res * x % mod;
+		}
+		x = x * x % mod;
+		y = y >> 1LL;
+	}
+	return res;
+}
+
+bool isComposite(BigInt n, BigInt a, BigInt d, int s) {
+	BigInt x = powerMod(a, d, n);
+	BigInt one("1", 10);
+	if (x == one || x == n - one) {
+		return false;
+	}
+	for (int i = 1; i < s; i++) {
+		x = x * x % n;
+		if (x == n - one) {
+			return false;
+		}
+	}
+	return true;
+}
+
+bool is_prime(BigInt A, int iteration = 5) { //using Miller-Rabin test
 	bool* isPrime;
+	int number = 78498; //with some experiment, 78498 is the number of prime numbers less than 1 000 000
 	if (sieveOfEratosthenes(isPrime)) {
 		if (A.length < 7) {
 			return isPrime[A.small];
 		}
 		else {
-
+			int s = 0;
+			BigInt three("1", 10);
+			BigInt one("1", 10);
+			BigInt zero("0", 10);
+			BigInt d = A - one;
+			while ((d & one) == zero) {
+				d = d >> 1LL;
+				s++;
+			}
+			for (int i = 0; i < iteration; i++) {
+				int a = 2 + rand();
+				string aString = to_string(a);
+				BigInt temp(aString, 10);
+				temp = temp % (A - three);
+				if (isComposite(A, temp, d, s)) {
+					return false;
+				}
+			}
+			return true;
 		}
 
 		free(isPrime);
