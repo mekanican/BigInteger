@@ -874,11 +874,11 @@ BigInt operator^(BigInt lhs, BigInt rhs)
 
 BigInt operator~(BigInt A)
 {
-	if(A.length < 19) {
+	/*if(A.length < 19) {
 		BigInt t(~A.small);
 		t.sign = !A.sign;
 		return t;
-	}
+	}*/
 
 	string s = A.getBin();
 	for(int i = 0; i < s.length(); i++)

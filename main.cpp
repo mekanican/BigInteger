@@ -38,8 +38,8 @@ int main() {
     string parameter[5];
 
     //int debug = 1;
-
-    /*while(getline(fin, line)) {
+    
+    while(getline(fin, line)) {
         for(int i = 0; i < 5; i++)
             parameter[i] = "";
         int count = 0;
@@ -49,15 +49,11 @@ int main() {
         bigIntProcess(parameter, count, fout);
 
         //cout << debug++ << endl;
-    }*/
-
-  /*  BigInt A("91727756580", 10);
-    string s = to_base64(A);
-    cout << s;*/
-    int iteration = 5;
+    }
     
-    BigInt a("1817871392", 10);
-    cout << is_prime(a, iteration);
+  /*  BigInt A("892178192388731814271428742188941278417127490427191279847419047194171", 10);
+    int iteration = 5;
+    cout << is_prime(A, iteration);*/
 
     fin.close();
     fout.close();
