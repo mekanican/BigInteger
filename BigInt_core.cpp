@@ -18,7 +18,7 @@ string BigInt::getBin()
 {
 	if (length < 19) {
         if(sign)
-		    return decimalToBinary(-(int)small);
+		    return decimalToBinary(-(long long)small);
         else
             return decimalToBinary(small);
 	}

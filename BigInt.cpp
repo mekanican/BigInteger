@@ -874,13 +874,13 @@ BigInt operator^(BigInt lhs, BigInt rhs)
 
 BigInt operator~(BigInt A)
 {
-	/*if(A.length < 19) {
-		BigInt t(~A.small);
-		t.sign = !A.sign;
-		return t;
-	}*/
-
 	string s = A.getBin();
+	reverse(s.begin(), s.end());
+	if (!A.sign) {
+		while (s.length() < 128 || s.length() % 8 != 0)
+			s += "0";
+	}
+	reverse(s.begin(), s.end());
 	for(int i = 0; i < s.length(); i++)
 		s[i] = (s[i] == '1') ? '0' : '1';
 	return BigInt(s,2);
