@@ -20,8 +20,6 @@ string addDecimal(string A, string B)
 	int tempRes = 0;
 	int carry = 0;
 
-	// while (B.length() < A.length())
-	// 	B.push_back('0');
 	for (unsigned int i = 0; i < B.length(); i++) {
 		tempRes = A[i] - '0' + B[i] - '0' + carry;
 		res.push_back(tempRes % 10 + '0');
@@ -72,7 +70,7 @@ string subDecimal(string A, string B)
 	return res;
 }
 
-string mulDecimal(string A, string B)
+string mulDecimal(string& A, string& B)
 {
 	if (A.length() < B.length())
 		return mulDecimal(B, A);
@@ -187,7 +185,7 @@ string decimalToBinary(long long n)
 	}
 }
 
-string removeLeadingZeros(string s) {
+string removeLeadingZeros(string& s) {
 	bool isNeg = (s[0] == '-');
 	unsigned int i = isNeg;
 	while (i < s.length() && s[i] == '0') i++;
@@ -276,7 +274,7 @@ BigInt pow(BigInt A, long long n)
 	return res;
 }
 
-int digits(BigInt A) {
+int digits(BigInt& A) {
 	return A.length; //return the number of digits in BASE 10
 }
 
@@ -298,7 +296,7 @@ BigInt max(BigInt A, BigInt B) {
 	}
 }
 
-string to_string(BigInt A) {
+string to_string(BigInt& A) {
 	return A.getDec();
 }
 
@@ -323,7 +321,7 @@ string to_base32(BigInt A) {
 		res += alphabet[index];
 		A = A / thirtyTwo;
 	}
-	std::reverse(res.begin(), res.end());
+	reverse(res.begin(), res.end());
 	if (sign) {
 		return "-" + res;
 	}
@@ -351,7 +349,7 @@ string to_base58(BigInt A) {
 		res += alphabet[index];
 		A = A / fiftyEight;
 	}
-	std::reverse(res.begin(), res.end());
+	reverse(res.begin(), res.end());
 	if (sign) {
 		return "-" + res;
 	}
@@ -379,7 +377,7 @@ string to_base64(BigInt A) {
 		res += alphabet[index];
 		A = A / sixtyFour;
 	}
-	std::reverse(res.begin(), res.end());
+	reverse(res.begin(), res.end());
 	if (sign) {
 		return "-" + res;
 	}
@@ -476,7 +474,9 @@ BigInt operator+(BigInt lhs, BigInt rhs) {
 	BigInt temp;
 	string temps = "";
 	if(max(lhs.length, rhs.length) < 19) { // Optimize small number 
-		return BigInt(lhs.small + rhs.small);
+		long long a = (lhs.sign ? -(long long)lhs.small : lhs.small);
+		long long b = (rhs.sign ? -(long long)rhs.small : rhs.small);
+		return BigInt(a + b);
 	} 
 	if(lhs.sign && rhs.sign) { // Neg + Neg = Neg
 		temp = lhs;
@@ -508,9 +508,10 @@ BigInt operator-(BigInt lhs, BigInt rhs) {
 	BigInt temp;
 	string temps = "";
 
-	
 	if(max(lhs.length, rhs.length) < 19){ // Optimize small number 
-		return BigInt(lhs.small - rhs.small);
+		long long a = (lhs.sign ? -(long long)lhs.small : lhs.small);
+		long long b = (rhs.sign ? -(long long)rhs.small : rhs.small);
+		return BigInt(a - b);
 	} 
 	
 	if(lhs.sign && rhs.sign) { // Neg - Neg <=> Neg + Pos
@@ -564,6 +565,7 @@ void shiftLeft10(BigInt& source, int num) {
 	reverse(source.big.begin(), source.big.end());
 }
 
+// Credit: Wikipedia
 // https://en.wikipedia.org/wiki/Karatsuba_algorithm#Pseudocode
 BigInt karatsuba(BigInt num1, BigInt num2) {
 
@@ -600,7 +602,9 @@ BigInt operator*(BigInt lhs, BigInt rhs)
 	BigInt temp1;
 	BigInt temp2;
 	if (lhs.length + rhs.length < 19) { // Optimize small number 
-		return BigInt(lhs.small * rhs.small);
+		long long a = (lhs.sign ? -(long long)lhs.small : lhs.small);
+		long long b = (rhs.sign ? -(long long)rhs.small : rhs.small);
+		return BigInt(a * b);
 	}
 	
 	if (lhs.sign && rhs.sign) { // Neg * Neg 
@@ -688,7 +692,11 @@ BigInt operator/(BigInt A, BigInt B)
 		return BigInt(0);
 	}
 	if (A.length < 19 && B.length < 19)
-		return BigInt(A.small / B.small);
+	{
+		long long a = (A.sign ? -(long long)A.small : A.small);
+		long long b = (B.sign ? -(long long)B.small : B.small);
+		return BigInt(a / b);
+	}
 
 	BigInt q, r;
 	divide(A, B, q, r);
@@ -717,7 +725,11 @@ BigInt operator%(BigInt A, BigInt B) {
 		return A;
 	}
 	if (A.length < 19 && B.length < 19)
-		return BigInt(A.small % B.small);
+	{
+		long long a = (A.sign ? -(long long)A.small : A.small);
+		long long b = (B.sign ? -(long long)B.small : B.small);
+		return BigInt(a % b);
+	}
 	BigInt q, r;
 	divide(A, B, q, r);
 	if (signA) {

@@ -6,7 +6,7 @@
 #include <fstream>
 using namespace std;
 
-BigInt whenNIsFour(string parameter[], BigInt lhs, BigInt rhs) {
+BigInt whenNIsFour(string parameter[], BigInt &lhs, BigInt &rhs) {
 	BigInt res;
 
 	string toCmp = parameter[2];
@@ -53,21 +53,21 @@ void bigIntProcess(string parameter[], int n, ofstream& fout) {
 			if (parameter[0] == "2") {
 				BigInt operand(parameter[2], 2);
 				res = ~operand;
-				fout << res.getBin() << endl;
+				fout << res.getBin() << "\n";
 			}
 			else {
 				BigInt operand(parameter[2], 10);
 				res = ~operand;
-				fout << res.getDec() << endl;
+				fout << res.getDec() << "\n";
 			}
 		}
 		else if (parameter[0] == "2" && parameter[1] == "10") {
 			BigInt operand(parameter[2], 2);
-			fout << operand.getDec() << endl;
+			fout << operand.getDec() << "\n";
 		}
 		else {
 			BigInt operand(parameter[2], 10);
-			fout << operand.getBin() << endl;
+			fout << operand.getBin() << "\n";
 		}
 	}
 	else {
@@ -76,14 +76,13 @@ void bigIntProcess(string parameter[], int n, ofstream& fout) {
 			BigInt lhs(parameter[1], 2);
 			BigInt rhs(parameter[3], 2);
 			res = whenNIsFour(parameter, lhs, rhs);
-			fout << res.getBin() << endl;
+			fout << res.getBin() << "\n";
 		}
 		else {
 			BigInt lhs(parameter[1], 10);
 			BigInt rhs(parameter[3], 10);
-
 			res = whenNIsFour(parameter, lhs, rhs);
-			fout << res.getDec() << endl;
+			fout << res.getDec() << "\n";
 		}
 	}
 }

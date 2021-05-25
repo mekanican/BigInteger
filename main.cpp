@@ -17,12 +17,12 @@ using namespace std;
 int main(int argc, char* argv[]) {
 
 	if (argc != 3) {
-		cout << "Wrong argument, take 2 argument as file name!" << endl;
+		cout << "Wrong argument, take 2 argument as file name!\n";
 		return 1;
 	}
 	double start = clock();
 
-	cout << "Program started!" << endl << endl;
+	cout << "Program started!\n\n";
 
     ifstream fin(argv[1]);
     ofstream fout(argv[2]);
@@ -44,10 +44,10 @@ int main(int argc, char* argv[]) {
         if(parameter[count - 1].length() == 0) count--;
 		sfunction = clock();
         bigIntProcess(parameter, count, fout);
-		cout << fixed << setprecision(4) << "Line " << counter++ << " takes " << ((double)clock() - sfunction) / CLOCKS_PER_SEC << " seconds" << endl;
+		cout << fixed << setprecision(4) << "Line " << counter++ << " takes " << ((double)clock() - sfunction) / CLOCKS_PER_SEC << " seconds" << "\n";
     }
     
-	cout << endl << endl << fixed << setprecision(4) << "Program takes totally " << ((double)clock() - start) / CLOCKS_PER_SEC << " seconds" << endl;
+	cout << "\n\n" << fixed << setprecision(4) << "Program takes totally " << ((double)clock() - start) / CLOCKS_PER_SEC << " seconds" << "\n";
 
     fin.close();
     fout.close();

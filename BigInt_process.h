@@ -3,6 +3,6 @@
 #include <fstream>
 using namespace std;
 
-BigInt whenNIsFour(string parameter[], BigInt lhs, BigInt rhs);
+BigInt whenNIsFour(string parameter[], BigInt &lhs, BigInt &rhs);
 void bigIntProcess(string parameter[], int n, ofstream& fout);
 

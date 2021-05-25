@@ -49,7 +49,6 @@ BigInt::BigInt(string input, int _base)
 
 
     if(_base == 10) {
-
         int n = input.length();
 	if(n == 0) return;
         if(input[0] == '-')
@@ -63,22 +62,19 @@ BigInt::BigInt(string input, int _base)
         if(length < 19) {
             small = stoll(temp);
         }
-
     } else if(_base == 2) {
 
         input = binaryToDecimal(input);
         int n = input.length();
-	if(n == 0) return;
+	    if(n == 0) return;
         if(input[0] == '-')
             sign = true;
         for(int i = n-1; i >= sign; i--)
             big += input[i];
         length = n - sign;
-
 		string temp = big;
 		reverse(temp.begin(), temp.end());
         if(length < 19) small = stoll(temp);
-
     } else {
         std::cerr << "Wrong base!" << std::endl;
     }
