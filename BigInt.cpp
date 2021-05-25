@@ -674,9 +674,16 @@ BigInt operator/(BigInt A, BigInt B)
 {
 	if (B.big == "0") throw overflow_error("Divide by zero");
 
+	
 	if (A == B) {
 		return BigInt(1);
 	}
+
+	bool signA = A.sign;
+	bool signB = B.sign;
+	A = abs(A);
+	B = abs(B);
+
 	if (A < B) {
 		return BigInt(0);
 	}
@@ -686,8 +693,7 @@ BigInt operator/(BigInt A, BigInt B)
 	BigInt q, r;
 	divide(A, B, q, r);
 	
-	if ((A.sign && !B.sign) || (!A.sign && B.sign))
-		q.sign = true;
+	q.sign = signA ^ signB;
 
 	return q;
 }
@@ -698,15 +704,25 @@ BigInt operator%(BigInt A, BigInt B) {
 	if (A == B) {
 		return BigInt(0);
 	}
+
+	bool signA = A.sign;
+	bool signB = B.sign;
+	A = abs(A);
+	B = abs(B);
+
 	if (A < B) {
+		if (signA) {
+			A.sign = true;
+		}
 		return A;
 	}
 	if (A.length < 19 && B.length < 19)
 		return BigInt(A.small % B.small);
 	BigInt q, r;
 	divide(A, B, q, r);
-	if ((A.sign && !B.sign) || (!A.sign && B.sign))
+	if (signA) {
 		r.sign = true;
+	}
 	return r;
 }
 
