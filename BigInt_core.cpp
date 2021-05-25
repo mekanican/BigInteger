@@ -51,6 +51,7 @@ BigInt::BigInt(string input, int _base)
     if(_base == 10) {
 
         int n = input.length();
+	if(n == 0) return;
         if(input[0] == '-')
             sign = true;
         for(int i = n-1; i >= sign; i--)
@@ -67,6 +68,7 @@ BigInt::BigInt(string input, int _base)
 
         input = binaryToDecimal(input);
         int n = input.length();
+	if(n == 0) return;
         if(input[0] == '-')
             sign = true;
         for(int i = n-1; i >= sign; i--)

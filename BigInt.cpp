@@ -125,6 +125,7 @@ string binaryToDecimal(string source) {
 	bool sign = (source.length() >= 128) && (source.length() % 8 == 0);
 
 	int n = source.length();
+	if(n == 0) return "0";
 	if(sign)
 	{
 		for(int i = 0; i < n; i++)
@@ -574,7 +575,7 @@ BigInt karatsuba(BigInt num1, BigInt num2) {
 		return BigInt(temp, 10);
 	}
 
-	int m = max(num1.length, num2.length);
+	int m = min(num1.length, num2.length);
 	int m2 = floor(m / 2);
 	BigInt high1, low1, high2, low2;
 	split_at(num1, high1, low1, m2);
@@ -752,7 +753,9 @@ BigInt operator<<(BigInt A, long long n)
 		return BigInt(t << n);
 	}
 
-	BigInt res = pow(BigInt(2), n);
+	BigInt two(2);
+
+	BigInt res = pow(two, n);
 	res = res * A;
 	return res;
 }
@@ -867,7 +870,6 @@ BigInt operator^(BigInt lhs, BigInt rhs)
 			res += A[i];
 		}
 	}
-	cout << res << endl;
 	reverse(res.begin(), res.end());
 	return BigInt(res, 2);
 }
