@@ -713,6 +713,13 @@ BigInt operator%(BigInt A, BigInt B) {
 		return BigInt(0);
 	}
 
+	if (A.length < 19 && B.length < 19)
+	{
+		long long a = (A.sign ? -(long long)A.small : A.small);
+		long long b = (B.sign ? -(long long)B.small : B.small);
+		return BigInt(a % b);
+	}
+
 	bool signA = A.sign;
 	bool signB = B.sign;
 	A = abs(A);
@@ -723,12 +730,6 @@ BigInt operator%(BigInt A, BigInt B) {
 			A.sign = true;
 		}
 		return A;
-	}
-	if (A.length < 19 && B.length < 19)
-	{
-		long long a = (A.sign ? -(long long)A.small : A.small);
-		long long b = (B.sign ? -(long long)B.small : B.small);
-		return BigInt(a % b);
 	}
 	BigInt q, r;
 	divide(A, B, q, r);

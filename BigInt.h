@@ -12,6 +12,7 @@ bool operator<(BigInt, BigInt);
 bool operator>(BigInt, BigInt);
 
 BigInt operator>>(BigInt, long long);
+
 BigInt operator<<(BigInt, long long);
 
 BigInt operator&(BigInt, BigInt);
@@ -23,11 +24,15 @@ string binaryToDecimal(string);
 string decimalToBinary(long long);
 string decimalToBinary(string);
 
-BigInt abs(BigInt A);
+BigInt abs(BigInt);
+
 BigInt pow(BigInt, long long);
-int digits(BigInt& A);
-BigInt min(BigInt A, BigInt B);
+
+int digits(BigInt&);
+
+BigInt min(BigInt, BigInt);
 BigInt max(BigInt A, BigInt B);
+
 string to_string(BigInt& A);
 string to_base32(BigInt A);
 string to_base58(BigInt A);
